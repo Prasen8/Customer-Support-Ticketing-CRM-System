@@ -77,13 +77,21 @@ def home():
 @app.post("/api/auth/register", response_model=schemas.UserResponse, status_code=201)
 def register(user: schemas.UserRegister, db: Session = Depends(get_db)):
     """Register a new user."""
+
     if crud.get_user_by_username(db, user.username):
         raise HTTPException(status_code=400, detail="Username already registered")
 
     if crud.get_user_by_email(db, user.email):
         raise HTTPException(status_code=400, detail="Email already registered")
 
+    # ✅ Automatic Admin Role
+    if user.email == "admin@gmail.com":
+        user.role = "admin"
+    else:
+        user.role = "customer"
+
     db_user = crud.create_user(db, user)
+
     if not db_user:
         raise HTTPException(status_code=400, detail="Could not create user")
 
