@@ -76,14 +76,15 @@ def home():
 
 
 # ==================== AUTH ENDPOINTS ====================
-
 @app.post("/api/auth/register", response_model=schemas.UserResponse, status_code=201)
 def register(user: schemas.UserRegister, db: Session = Depends(get_db)):
     """Register a new user."""
 
+    # Check existing username
     if crud.get_user_by_username(db, user.username):
         raise HTTPException(status_code=400, detail="Username already registered")
 
+    # Check existing email
     if crud.get_user_by_email(db, user.email):
         raise HTTPException(status_code=400, detail="Email already registered")
 
@@ -93,11 +94,11 @@ def register(user: schemas.UserRegister, db: Session = Depends(get_db)):
     if user.email == "superadmin@gmail.com":
         role = "admin"
 
-    # Create user
+    # Create user with hashed password
     new_user = models.User(
         username=user.username,
         email=user.email,
-        password=user.password,
+        hashed_password=hash_password(user.password),
         role=role
     )
 
@@ -106,7 +107,6 @@ def register(user: schemas.UserRegister, db: Session = Depends(get_db)):
     db.refresh(new_user)
 
     return new_user
-
 
 @app.post("/api/auth/login", response_model=schemas.TokenResponse)
 def login(user: schemas.UserLogin, db: Session = Depends(get_db)):
