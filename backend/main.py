@@ -84,18 +84,25 @@ def register(user: schemas.UserRegister, db: Session = Depends(get_db)):
     if crud.get_user_by_email(db, user.email):
         raise HTTPException(status_code=400, detail="Email already registered")
 
-    # ✅ Automatic Admin Role
-    if user.email == "admin@gmail.com":
-        user.role = "admin"
-    else:
-        user.role = "customer"
+    # Assign role
+    role = "customer"
 
-    db_user = crud.create_user(db, user)
+    if user.email == "superadmin@gmail.com":
+        role = "admin"
 
-    if not db_user:
-        raise HTTPException(status_code=400, detail="Could not create user")
+    # Create user
+    new_user = models.User(
+        username=user.username,
+        email=user.email,
+        password=user.password,
+        role=role
+    )
 
-    return db_user
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+
+    return new_user
 
 
 @app.post("/api/auth/login", response_model=schemas.TokenResponse)
