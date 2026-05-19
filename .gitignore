@@ -1,0 +1,53 @@
+# =========================
+# Backend (Python/FastAPI)
+# =========================
+
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+*.db
+
+.env
+
+# =========================
+# Frontend (React/Vite)
+# =========================
+
+node_modules/
+dist/
+.vite/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =========================
+# OS Files
+# =========================
+
+.DS_Store
+Thumbs.db
+
+# =========================
+# IDE Files
+# =========================
+
+.vscode/
+.idea/
+
+# =========================
+# Build Files
+# =========================
+
+build/
+coverage/
+
+# =========================
+# Misc
+# =========================
+
+*.log
