@@ -25,9 +25,10 @@ def get_all_users(db: Session):
     return db.query(User).filter(User.role == "customer").all()
 
 
-def create_user(db: Session, user: UserRegister) -> User:
+def create_user(db: Session, user: UserRegister, role: str = "customer") -> User:
     if get_user_by_username(db, user.username):
         return None
+
     if get_user_by_email(db, user.email):
         return None
 
@@ -35,11 +36,13 @@ def create_user(db: Session, user: UserRegister) -> User:
         username=user.username,
         email=user.email,
         hashed_password=hash_password(user.password),
-        role="customer",
+        role=role,
     )
+
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
+
     return db_user
 
 
